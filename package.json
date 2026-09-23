@@ -1,0 +1,22 @@
+{
+  "name": "semantic-release-gitmoji-config",
+  "version": "1.0.0",
+  "description": "Reusable semantic-release configuration with Gitmoji support",
+  "scripts": {
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teopartesi/semantic-release-gitmoji-config.git"
+  },
+  "keywords": [],
+  "author": "Téo Partesi",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/teopartesi/semantic-release-gitmoji-config/issues"
+  },
+  "homepage": "https://github.com/teopartesi/semantic-release-gitmoji-config#readme",
+  "private": true
+}
