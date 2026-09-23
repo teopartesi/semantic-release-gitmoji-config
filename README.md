@@ -1,2 +1,2 @@
 # semantic-release-gitmoji-config
-Config Semantic Release who functions with all Gitmojis to automate versions and CHANGELOG.
+Reusable semantic-release configuration with Gitmoji support to automate versioning and release notes. Includes setup instructions and GitHub Actions examples.
