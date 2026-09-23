@@ -1,28 +1,63 @@
 {
   "name": "semantic-release-gitmoji-config",
   "version": "1.0.0",
-  "description": "Reusable semantic-release configuration with Gitmoji support",
+  "description": "Shareable semantic-release configuration with complete Gitmoji and Conventional Commits support",
+  "type": "module",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "files": [
+    "index.mjs"
+  ],
   "scripts": {
-    "release": "semantic-release",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:package": "publint --strict",
+    "pack:dry": "npm pack --dry-run",
+    "test": "node --test",
+    "semantic-release": "semantic-release",
     "release:dry": "semantic-release --dry-run"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/teopartesi/semantic-release-gitmoji-config.git"
   },
-  "keywords": [],
+  "keywords": [
+    "semantic-release",
+    "gitmoji",
+    "conventional-commits",
+    "changelog",
+    "release-automation",
+    "shareable-config"
+  ],
   "author": "Téo Partesi",
   "license": "MIT",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/teopartesi/semantic-release-gitmoji-config/issues"
   },
   "homepage": "https://github.com/teopartesi/semantic-release-gitmoji-config#readme",
-  "private": true,
-  "devDependencies": {
+  "engines": {
+    "node": "^22.14.0 || >=24.10.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
     "@semantic-release/changelog": "^7.0.0",
+    "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^11.0.1",
-    "gitmojis": "^3.15.0",
+    "@semantic-release/github": "^12.0.0",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "gitmojis": "^3.15.0"
+  },
+  "peerDependencies": {
+    "semantic-release": "^25.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.5",
+    "publint": "^0.3.22",
     "semantic-release": "^25.0.9"
   }
 }
