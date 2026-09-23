@@ -1,0 +1,76 @@
+name: Semantic Release Gitmoji Config Release
+
+run-name: Release from ${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+    release:
+        name: 🎖️ Semantic Release
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            issues: write
+            pull-requests: write
+        outputs:
+            released: ${{ steps.detect_release.outputs.released }}
+            release_tag: ${{ steps.detect_release.outputs.release_tag }}
+            image_tag: ${{ steps.detect_release.outputs.image_tag }}
+        
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+              with:
+                fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                node-version: 24.18.0
+                cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Record existing release tags
+              id: existing_tags
+              shell: bash
+              run: |
+                tag_count="$(git tag --points-at HEAD --list 'v*' | wc -l | tr -d ' ')"
+                echo "count=${tag_count}" >> "${GITHUB_OUTPUT}"
+
+            - name: Create semantic release
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: npm run semantic-release
+
+            - name: Detect new release
+              id: detect_release
+              shell: bash
+              env:
+                PREVIOUS_TAG_COUNT: ${{ steps.existing_tags.outputs.count }}
+              run: |
+                tag_count="$(git tag --points-at HEAD --list 'v*' | wc -l | tr -d ' ')"
+
+                if (( tag_count > PREVIOUS_TAG_COUNT )); then
+                    release_tag="$(git tag --points-at HEAD --list 'v*' --sort=-version:refname | sed -n '1p')"
+                    image_tag="${release_tag#v}"
+                    echo "released=true" >> "${GITHUB_OUTPUT}"
+                    echo "release_tag=${release_tag}" >> "${GITHUB_OUTPUT}"
+                    echo "image_tag=${image_tag}" >> "${GITHUB_OUTPUT}"
+                    echo "Created ${release_tag}; image ${image_tag} will be deployed."
+                else
+                    echo "released=false" >> "${GITHUB_OUTPUT}"
+                    echo "release_tag=" >> "${GITHUB_OUTPUT}"
+                    echo "image_tag=" >> "${GITHUB_OUTPUT}"
+                    echo "No releasable commit found; deployment will be skipped."
+                fi
+
