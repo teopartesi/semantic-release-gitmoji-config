@@ -1,6 +1,6 @@
 {
   "name": "semantic-release-gitmoji-config",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Shareable semantic-release configuration with complete Gitmoji and Conventional Commits support",
   "type": "module",
   "main": "./index.mjs",

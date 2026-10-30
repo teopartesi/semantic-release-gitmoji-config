@@ -1,3 +1,27 @@
+# [1.1.0](https://github.com/teopartesi/semantic-release-gitmoji-config/compare/v1.0.0...v1.1.0) (2026-10-30)
+
+
+### ✨ Introduce new features
+
+* **dependabot:** Configure Dependabot for npm and GitHub Actions ([272e427](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/272e427c9bbde67b3358f901c2f563a22582de48))
+
+
+### 🎨 Improve structure / format of the code
+
+* **format:** Apply Prettier formatting ([cbad8e8](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/cbad8e8f573653b86780bda6f54f7cdd2a30354b))
+
+
+### 📝 Add or update documentation
+
+* **readme:** Update README with badges ([f268680](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/f268680293451f24cc8adb6cdd54c099cea0cdc4))
+
+
+### Chores
+
+* **format:** Ignore generated changelog ([eae77c7](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/eae77c7074040f1bd61c1224e5e15e4ac8eeb342))
+* **release:** 1.1.0 [skip ci] ([cab1b0e](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/cab1b0ee7c1d5418edeb2b79516bdeec6bf19a24))
+* **release:** Recover incomplete 1.1.0 release ([d43a8e0](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/d43a8e08aafccb781efb8275a418ee63b012aed4))
+
 # 1.0.0 (2026-09-24)
 
 
