@@ -1,16 +1,23 @@
 # semantic-release-gitmoji-config
 
+[![npm version](https://img.shields.io/npm/v/semantic-release-gitmoji-config?logo=npm)](https://www.npmjs.com/package/semantic-release-gitmoji-config)
+[![npm downloads](https://img.shields.io/npm/dm/semantic-release-gitmoji-config?logo=npm)](https://www.npmjs.com/package/semantic-release-gitmoji-config)
+[![Quality](https://github.com/teopartesi/semantic-release-gitmoji-config/actions/workflows/ci.yml/badge.svg)](https://github.com/teopartesi/semantic-release-gitmoji-config/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/npm/l/semantic-release-gitmoji-config)](LICENSE)
+
 A shareable [semantic-release](https://semantic-release.gitbook.io/) configuration that understands the complete official [Gitmoji](https://gitmoji.dev/) catalog as Unicode emoji or shortcodes, while remaining compatible with Conventional Commits.
 
 It analyzes commits, calculates the next version, generates a grouped `CHANGELOG.md`, commits that changelog, and creates a GitHub release.
 
-## Requirements
+📦 [View the package on npm](https://www.npmjs.com/package/semantic-release-gitmoji-config)
+
+## 📋 Requirements
 
 - Node.js `^22.14.0 || >=24.10.0`
 - semantic-release `^25`
 - A GitHub repository
 
-## Installation
+## 📦 Installation
 
 Install semantic-release and this preset as development dependencies:
 
@@ -66,7 +73,7 @@ jobs:
 
 Because the preset commits `CHANGELOG.md` back to the release branch, the repository rules must allow the GitHub Actions token to push that release commit.
 
-## Supported commit messages
+## ✍️ Supported commit messages
 
 The parser accepts Gitmoji, Conventional Commits, and hybrid histories:
 
@@ -86,7 +93,7 @@ A hybrid message follows its leading type. For example, `💄 feat: Restyle the 
 
 Unicode variation selectors are normalized, so forms such as `⚡` and `⚡️` are equivalent. Merge commits and messages with neither a known Gitmoji nor a valid Conventional Commit type are omitted from release notes.
 
-### Version rules
+### 🧭 Version rules
 
 | Commit                                                      | Release                  |
 | ----------------------------------------------------------- | ------------------------ |
@@ -100,7 +107,7 @@ The last rule for Gitmojis is an intentional policy of this preset: Gitmojis who
 
 Conventional Commit types that do not trigger a version are still included in the changelog when another commit causes a release.
 
-## Release notes and changelog
+## 📝 Release notes and changelog
 
 Gitmoji commits are grouped using their official intention. For example:
 
@@ -128,7 +135,7 @@ It writes `CHANGELOG.md`, commits it with `[skip ci]`, creates a `v<version>` ta
 
 The preset leaves `branches` and `tagFormat` at semantic-release defaults. Those defaults include both `main` and `master` and produce `v<version>` tags. Either option can be overridden in the consuming repository.
 
-## Developing this preset
+## 🛠️ Developing this preset
 
 Install the locked dependencies and run all local checks:
 
@@ -148,7 +155,7 @@ Use the dry run to inspect this repository's next release without publishing any
 npm run release:dry
 ```
 
-## Publishing this preset
+## 🚀 Publishing this preset
 
 This repository has a separate internal `release.config.mjs`. It extends the public preset, adds `@semantic-release/npm` before `@semantic-release/git`, and commits the npm-updated `package.json` and `package-lock.json` together with `CHANGELOG.md`.
 
@@ -165,6 +172,6 @@ After trusted publishing is configured, remove the `NPM_TOKEN` secret and revoke
 
 Do not change the version manually. semantic-release updates it during publication based on the commit history.
 
-## License
+## 📄 License
 
 [MIT](LICENSE)
