@@ -34,6 +34,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify release commit is current
+        shell: bash
+        run: |
+          remote_sha="$(git ls-remote origin "refs/heads/${GITHUB_REF_NAME}" | cut -f1)"
+          if [[ "$(git rev-parse HEAD)" != "${remote_sha}" ]]; then
+            echo "::error::${GITHUB_REF_NAME} advanced after this workflow started; run it again."
+            exit 1
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
