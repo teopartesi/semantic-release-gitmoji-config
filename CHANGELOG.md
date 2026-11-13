@@ -1,3 +1,16 @@
+# 📝 Changelog
+
+## 🔖 [1.2.0](https://github.com/teopartesi/semantic-release-gitmoji-config/compare/v1.1.0...v1.2.0) (2026-11-13)
+
+### 💚 Fix CI Build
+
+* **💚 workflow:** Change Workflow in CI to automate Realease in Main ([16e6b35](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/16e6b3560b35a6b437bf73358bbf8e45fb8f60db))
+
+### ✨ Introduce new features
+
+* **💚 ci:** Add job to ✅test connection to npm 📦package functions ([0fccfef](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/0fccfef77a775d040364f1df1cae8e84d4cc4468))
+* **🎨 style:** Add Style in CHANGELOG with emoji for scopes ([e70fc25](https://github.com/teopartesi/semantic-release-gitmoji-config/commit/e70fc25a57e317a7665ef80316b37e6fe6ddab72))
+
 # [1.1.0](https://github.com/teopartesi/semantic-release-gitmoji-config/compare/v1.0.0...v1.1.0) (2026-10-30)
 
 
