@@ -12,8 +12,8 @@ const selfReleasePlugins = sharedConfig.plugins.flatMap((plugin) => {
     [
       '@semantic-release/git',
       {
+        ...plugin[1],
         assets: ['CHANGELOG.md', 'package.json', 'package-lock.json'],
-        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
       },
     ],
   ];

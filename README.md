@@ -109,19 +109,64 @@ Conventional Commit types that do not trigger a version are still included in th
 
 ## 📝 Release notes and changelog
 
-Gitmoji commits are grouped using their official intention. For example:
+Gitmoji commits are grouped using their official intention. Conventional Commits have emoji-prefixed sections such as `✨ Features`, `🐛 Bug Fixes`, `📝 Documentation`, and `💚 Continuous Integration`. These sections remain separate from Gitmoji intentions.
+
+Breaking-change notes appear first under `💥 BREAKING CHANGES`. Other sections are sorted alphabetically by their label, ignoring the emoji. Commits within each section are sorted by their original scope and then subject.
+
+For example, a changelog can contain the following entries (commit links omitted here):
 
 ```markdown
-## 🚀 Deploy stuff
+# 📝 Changelog
 
-- Deploy the application
+## 🔖 [2.0.0](https://github.com/owner/repo/compare/v1.0.0...v2.0.0) (2026-11-13)
 
-## 💚 Fix CI Build
+### 💥 BREAKING CHANGES
 
-- Fix the release workflow
+- **🌐 api:** Migrate clients to the `/v2` endpoint.
+
+### 🐛 Bug Fixes
+
+- **🌐 api:** Reject malformed requests.
+
+### 🚀 Deploy stuff
+
+- Deploy the application.
+
+### ✨ Features
+
+- **🌐 api:** Add the `/v2` endpoint.
+
+### 💚 Fix CI Build
+
+- **💚 workflow:** Fix the release workflow.
 ```
 
-Conventional Commits use familiar sections such as `Features`, `Bug Fixes`, `Documentation`, and `Continuous Integration`.
+Every release level uses the same version heading, with its date and comparison link when a previous release exists. The changelog plugin adds `# 📝 Changelog` when it next writes the file. Existing release entries are preserved without reformatting.
+
+Automatic commits matching `chore(release): <version> [skip ci]` or `chore(release): 🔖 <version> [skip ci]` are omitted from the notes. Manual maintenance such as `chore(release): Recover incomplete release` remains visible.
+
+### 🏷️ Scope emojis
+
+The preset decorates these common scopes in release notes:
+
+| Emoji | Scopes                        |
+| ----- | ----------------------------- |
+| 🌐    | `api`                         |
+| 🔐    | `auth`, `security`            |
+| ⚙️    | `core`, `config`              |
+| 📦    | `deps`, `deps-dev`, `npm`     |
+| 📝    | `docs`, `readme`              |
+| 💚    | `ci`, `workflow`, `workflows` |
+| ✅    | `test`, `tests`               |
+| 🏗️    | `build`                       |
+| 💄    | `ui`, `ux`                    |
+| 🎨    | `format`, `style`             |
+| 🔖    | `release`                     |
+| 🤖    | `dependabot`                  |
+
+Scope matching is case-insensitive and preserves the original spelling: `fix(API): ...` is displayed with `🌐 API`. Unknown scopes and scopes that already contain an emoji are preserved, and `*` is hidden. This fixed table only affects display; commit parsing and version rules are unchanged.
+
+### 🔌 Plugins and configuration
 
 The shared preset runs these plugins:
 
@@ -131,9 +176,17 @@ The shared preset runs these plugins:
 4. `@semantic-release/git`
 5. `@semantic-release/github`
 
-It writes `CHANGELOG.md`, commits it with `[skip ci]`, creates a `v<version>` tag, and publishes a GitHub release. It deliberately does **not** include `@semantic-release/npm`, so adopting the preset does not publish the consumer project to npm.
+It writes `CHANGELOG.md`, commits it with `chore(release): 🔖 <version> [skip ci]`, creates a `v<version>` tag, and publishes a GitHub release. It deliberately does **not** include `@semantic-release/npm`, so adopting the preset does not publish the consumer project to npm.
 
 The preset leaves `branches` and `tagFormat` at semantic-release defaults. Those defaults include both `main` and `master` and produce `v<version>` tags. Either option can be overridden in the consuming repository.
+
+### 🌿 Branches and pull requests
+
+Opening a pull request does not publish a release or change the changelog. When a branch such as `develop` is merged into `main`, semantic-release collects all commits reachable from `main` since the previous release tag. A normal merge, including a `--no-ff` merge, preserves the branch commits; a rebase merge also preserves their individual messages, with new hashes.
+
+All recognized Gitmoji and Conventional Commit messages from that history are included in the next release notes. The merge message itself and unsupported messages such as `Bump publint from ...` are omitted. The highest applicable release level across the collected commits determines the next version.
+
+A squash merge replaces the branch history with one commit on `main`. Only that final commit is analyzed, so preserving every original entry requires a normal merge or rebase merge. Keep `fetch-depth: 0` in the release checkout so both the full history and release tags are available. `develop` does not need to be configured as a release branch for its commits to be included after merging into `main`.
 
 ## 🛠️ Developing this preset
 
@@ -147,7 +200,7 @@ npm run lint:package
 npm run pack:dry
 ```
 
-The test suite calls the real commit analyzer and release-notes generator. It checks every Gitmoji from the installed official catalog in both Unicode and shortcode form, Conventional Commits, breaking changes, scopes, variation selectors, release-note grouping, and merge exclusion.
+The test suite calls the real commit analyzer and release-notes generator. It checks every Gitmoji from the installed official catalog in both Unicode and shortcode form, Conventional Commits, breaking changes, scope decoration, variation selectors, section ordering, links, and automatic release-commit filtering. An integration test creates a temporary Git repository, merges a multi-commit `develop` branch, and checks that future releases preserve existing changelog entries.
 
 Use the dry run to inspect this repository's next release without publishing anything:
 
