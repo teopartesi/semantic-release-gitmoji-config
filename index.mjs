@@ -2,6 +2,8 @@ import { gitmojis } from 'gitmojis';
 
 const VARIATION_SELECTORS_PATTERN = /[\uFE0E\uFE0F]/gu;
 const DEFAULT_GITMOJI_RELEASE = 'patch';
+const AUTOMATED_RELEASE_SUBJECT_PATTERN =
+  /^(?:🔖\s+)?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)? \[skip ci\]$/u;
 
 export function normalizeGitmoji(value) {
   return value.replace(VARIATION_SELECTORS_PATTERN, '');
@@ -46,18 +48,52 @@ const gitmojiByType = new Map(
 );
 
 const conventionalSections = new Map([
-  ['build', 'Build System'],
-  ['chore', 'Chores'],
-  ['ci', 'Continuous Integration'],
-  ['docs', 'Documentation'],
-  ['feat', 'Features'],
-  ['fix', 'Bug Fixes'],
-  ['perf', 'Performance Improvements'],
-  ['refactor', 'Code Refactoring'],
-  ['revert', 'Reverts'],
-  ['style', 'Styles'],
-  ['test', 'Tests'],
+  ['build', '🏗️ Build System'],
+  ['chore', '🔧 Chores'],
+  ['ci', '💚 Continuous Integration'],
+  ['docs', '📝 Documentation'],
+  ['feat', '✨ Features'],
+  ['fix', '🐛 Bug Fixes'],
+  ['perf', '⚡️ Performance Improvements'],
+  ['refactor', '♻️ Code Refactoring'],
+  ['revert', '⏪️ Reverts'],
+  ['style', '🎨 Styles'],
+  ['test', '✅ Tests'],
 ]);
+
+const scopeEmojis = new Map([
+  ['api', '🌐'],
+  ['auth', '🔐'],
+  ['security', '🔐'],
+  ['core', '⚙️'],
+  ['config', '⚙️'],
+  ['deps', '📦'],
+  ['deps-dev', '📦'],
+  ['npm', '📦'],
+  ['docs', '📝'],
+  ['readme', '📝'],
+  ['ci', '💚'],
+  ['workflow', '💚'],
+  ['workflows', '💚'],
+  ['test', '✅'],
+  ['tests', '✅'],
+  ['build', '🏗️'],
+  ['ui', '💄'],
+  ['ux', '💄'],
+  ['format', '🎨'],
+  ['style', '🎨'],
+  ['release', '🔖'],
+  ['dependabot', '🤖'],
+]);
+
+function formatScope(scope) {
+  if (!scope || scope === '*') {
+    return '';
+  }
+
+  const emoji = scopeEmojis.get(scope.toLowerCase());
+  return emoji ? `${emoji} ${scope}` : scope;
+}
 
 function getReleaseNoteSection(commit) {
   const gitmoji = commit.type ? gitmojiByType.get(normalizeGitmoji(commit.type)) : undefined;
@@ -67,7 +103,7 @@ function getReleaseNoteSection(commit) {
   }
 
   if (commit.revert) {
-    return 'Reverts';
+    return conventionalSections.get('revert');
   }
 
   return conventionalSections.get(commit.type);
@@ -76,15 +112,20 @@ function getReleaseNoteSection(commit) {
 export function transformCommit(commit, context) {
   const type = getReleaseNoteSection(commit);
 
-  if (!type) {
+  if (
+    !type ||
+    (commit.type === 'chore' &&
+      commit.scope === 'release' &&
+      AUTOMATED_RELEASE_SUBJECT_PATTERN.test(commit.subject))
+  ) {
     return undefined;
   }
 
   const notes = commit.notes.map((note) => ({
     ...note,
-    title: 'BREAKING CHANGES',
+    title: '💥 BREAKING CHANGES',
   }));
-  const scope = commit.scope === '*' ? '' : commit.scope;
+  const scope = formatScope(commit.scope);
   const shortHash =
     typeof commit.hash === 'string' ? commit.hash.substring(0, 7) : commit.shortHash;
   const issues = [];
@@ -133,6 +174,36 @@ export function transformCommit(commit, context) {
 
 export const writerOpts = {
   transform: transformCommit,
+  commitGroupsSort(left, right) {
+    const withoutEmoji = (title) => title.replace(/^[^\p{L}\p{N}]+/u, '');
+    return withoutEmoji(left.title).localeCompare(withoutEmoji(right.title), 'en');
+  },
+  commitsSort(left, right) {
+    return (
+      (left.raw.scope ?? '').localeCompare(right.raw.scope ?? '', 'en') ||
+      (left.subject ?? left.header ?? '').localeCompare(right.subject ?? right.header ?? '', 'en')
+    );
+  },
+  headerPartial: `## 🔖 {{#if linkCompare}}[{{version}}]({{#if repository}}{{host}}/{{owner}}/{{repository}}{{else}}{{repoUrl}}{{/if}}/compare/{{previousTag}}...{{currentTag}}){{else}}{{version}}{{/if}}{{#if title}} "{{title}}"{{/if}}{{#if date}} ({{date}}){{/if}}
+`,
+  mainTemplate: `{{> header}}
+{{#each noteGroups}}
+
+### {{title}}
+
+{{#each notes}}
+* {{#if commit.scope}}**{{commit.scope}}:** {{/if}}{{text}}
+{{/each}}
+{{/each}}
+{{#each commitGroups}}
+
+### {{title}}
+
+{{#each commits}}
+{{> commit root=@root}}
+{{/each}}
+{{/each}}
+`,
 };
 
 const releaseConfig = {
@@ -155,13 +226,14 @@ const releaseConfig = {
       '@semantic-release/changelog',
       {
         changelogFile: 'CHANGELOG.md',
+        changelogTitle: '# 📝 Changelog',
       },
     ],
     [
       '@semantic-release/git',
       {
         assets: ['CHANGELOG.md'],
-        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+        message: 'chore(release): 🔖 ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
       },
     ],
     '@semantic-release/github',
