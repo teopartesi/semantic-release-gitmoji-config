@@ -159,7 +159,9 @@ npm run release:dry
 
 This repository has a separate internal `release.config.mjs`. It extends the public preset, adds `@semantic-release/npm` before `@semantic-release/git`, and commits the npm-updated `package.json` and `package-lock.json` together with `CHANGELOG.md`.
 
-The release workflow is manual and only publishes from `main`. It validates the package first, then creates both the npm and GitHub releases.
+The release workflow runs on pushes to `main` or manually and only publishes from `main`. It validates the package and token authentication first, then creates both the npm and GitHub releases.
+
+The CI workflow also runs a `Verify release tokens` job on pull requests from this repository, excluding Dependabot. It checks GitHub repository access and runs `npm whoami` using the `NPM_TOKEN` secret through `NODE_AUTH_TOKEN`. Fork and Dependabot pull requests skip this job because Actions secrets are unavailable. These read-only checks validate authentication; they do not guarantee publication permissions, npm 2FA requirements, or permission to push through branch protection. To require this check before merging eligible pull requests, add it to the repository's required status checks.
 
 For the first npm publication, add a granular npm access token as the `NPM_TOKEN` GitHub Actions secret. Once the package exists on npm, configure a trusted publisher in the npm package settings with:
 
@@ -168,7 +170,7 @@ For the first npm publication, add a granular npm access token as the `NPM_TOKEN
 - Repository: `semantic-release-gitmoji-config`
 - Workflow filename: `release.yml`
 
-After trusted publishing is configured, remove the `NPM_TOKEN` secret and revoke the bootstrap token. The workflow grants `id-token: write`, and npm automatically attaches provenance for this public package.
+After trusted publishing is configured, adapt the token verification job and its reusable workflow secret requirement for OIDC before removing the `NPM_TOKEN` secret and revoking the bootstrap token. The current authentication check requires `NPM_TOKEN`; it does not validate trusted publishing. The release job grants `id-token: write`, and npm automatically attaches provenance for this public package.
 
 Do not change the version manually. semantic-release updates it during publication based on the commit history.
 
