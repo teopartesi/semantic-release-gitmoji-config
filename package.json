@@ -58,6 +58,6 @@
   "devDependencies": {
     "prettier": "^3.8.5",
     "publint": "^0.3.22",
-    "semantic-release": "^25.0.9"
+    "semantic-release": "^26.0.1"
   }
 }
